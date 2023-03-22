@@ -1,6 +1,6 @@
-const FaceRecognition = () => {
+const FaceRecognition = ({ imageUrl } : any) => {
   return (
-    <img className="rounded-md drop-shadow-md" src="https://samples.clarifai.com/metro-north.jpg" alt="sample" />
+    <img className="rounded-md drop-shadow-md" src={imageUrl} alt="sample" />
   );
 };
 
