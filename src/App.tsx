@@ -10,14 +10,26 @@ class App extends Component<{}, {input: string, imageUrl: string, box: {}}> {
     super(props);
     this.state = {
       input: '',
-      imageUrl: '',
+      imageUrl: 'https://i0.wp.com/post.medicalnewstoday.com/wp-content/uploads/sites/3/2020/03/GettyImages-1092658864_hero-1024x575.jpg?w=1155&h=1528',
       box: {}
     };
   }
 
   calculateFaceLocation = (data : any) => {
     const clarifaiFaceBound = data.outputs[0].data.regions[0].region_info.bounding_box;
-    
+    const image = document.getElementById('inputimage');
+    const width = Number(image?.width);
+    const height = Number(image?.height);
+    return {
+      leftCol: clarifaiFaceBound.left_col * width,
+      topRow: clarifaiFaceBound.top_row * height,
+      rightCol: width - (clarifaiFaceBound.right_col * width),
+      bottomRow: height - (clarifaiFaceBound.bottom_row * height)
+    }
+  }
+
+  displayFaceBox = (box: any) => {
+    this.setState({box})
   }
 
   onInputChange = (event: any) => {
@@ -63,7 +75,7 @@ class App extends Component<{}, {input: string, imageUrl: string, box: {}}> {
     )
       .then((response) => response.json())
       .then((result) => {
-        this.calculateFaceLocation(result)
+        this.displayFaceBox(this.calculateFaceLocation(result))
       })
       .catch((error) => console.log("error", error));
   };
@@ -79,7 +91,7 @@ class App extends Component<{}, {input: string, imageUrl: string, box: {}}> {
             onInputChange={this.onInputChange}
             onSubmit={this.onSubmit}
           />
-          <FaceRecognition imageUrl={this.state.imageUrl} />
+          <FaceRecognition imageUrl={this.state.imageUrl} box={this.state.box} />
         </div>
 
       </div>

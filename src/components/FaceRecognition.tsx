@@ -1,6 +1,11 @@
-const FaceRecognition = ({ imageUrl } : any) => {
+const FaceRecognition = ({ imageUrl, box } : any) => {
   return (
-    <img className="rounded-md drop-shadow-md" src={imageUrl} alt="sample" />
+    <div>
+      <div className="absolute">
+        <img id='inputimage' className="rounded-md drop-shadow-md" src={imageUrl} alt="sample" />
+        <div className="bounding-box" style={{left: box.leftCol, top: box.topRow, right: box.rightCol, bottom: box.bottomRow}}></div>
+      </div>
+    </div>
   );
 };
 
