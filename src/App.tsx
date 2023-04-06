@@ -28,7 +28,7 @@ class App extends Component<AppProps, AppState> {
   }
 
   componentDidMount() {
-    fetch('https://jsonplaceholder.typicode.com/users')
+    fetch('http://localhost:3000')
       .then((response) => response.json())
       .then((users) => console.log(users));
   }
