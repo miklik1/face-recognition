@@ -13,30 +13,53 @@ interface AppState {
   box: Record<string, number>;
   route: string;
   isSignedIn: boolean;
+  user: User;
+}
+
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  entries: number;
+  joined: string;
 }
 
 class App extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      input: '',
-      imageUrl: '',
+      input: "",
+      imageUrl: "",
       box: {},
-      route: 'signin',
+      route: "signin",
       isSignedIn: false,
+      user: {
+        id: "",
+        name: "",
+        email: "",
+        entries: 0,
+        joined: "",
+      },
     };
   }
 
-  componentDidMount() {
-    fetch('http://localhost:3000')
-      .then((response) => response.json())
-      .then((users) => console.log(users));
-  }
+  loadUser = (data: User) => {
+    console.log(data);
+    this.setState({
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined,
+      },
+    });
+  };
 
   calculateFaceLocation = (data: any): Record<string, number> => {
     const clarifaiFaceBound =
       data.outputs[0].data.regions[0].region_info.bounding_box;
-    const image = document.getElementById('inputimage') as HTMLImageElement;
+    const image = document.getElementById("inputimage") as HTMLImageElement;
     const width = Number(image?.width);
     const height = Number(image?.height);
     return {
@@ -57,10 +80,10 @@ class App extends Component<AppProps, AppState> {
 
   onSubmit = () => {
     this.setState({ imageUrl: this.state.input });
-    const PAT = '2adfd59825a84d0c8579f0a4e002cc20';
-    const USER_ID = 'nrklysorzmq7';
-    const APP_ID = 'face-recognition';
-    const MODEL_ID = 'face-detection';
+    const PAT = "2adfd59825a84d0c8579f0a4e002cc20";
+    const USER_ID = "nrklysorzmq7";
+    const APP_ID = "face-recognition";
+    const MODEL_ID = "face-detection";
     const IMAGE_URL = this.state.input;
 
     const raw = JSON.stringify({
@@ -80,29 +103,47 @@ class App extends Component<AppProps, AppState> {
     });
 
     const requestOptions = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        Accept: 'application/json',
-        Authorization: 'Key ' + PAT,
+        Accept: "application/json",
+        Authorization: "Key " + PAT,
       },
       body: raw,
     };
 
     fetch(
-      'https://api.clarifai.com/v2/models/' + MODEL_ID + '/outputs',
+      "https://api.clarifai.com/v2/models/" + MODEL_ID + "/outputs",
       requestOptions
     )
       .then((response) => response.json())
       .then((result) => {
+        if (result) {
+          fetch("http://localhost:3000/image", {
+            method: "put",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              id: this.state.user.id,
+            }),
+          })
+            .then((res) => res.json())
+            .then((entries) => {
+              this.setState({
+                user: {
+                  ...this.state.user,
+                  entries: entries,
+                },
+              });
+            });
+        }
         this.displayFaceBox(this.calculateFaceLocation(result));
       })
-      .catch((error) => console.log('error', error));
+      .catch((error) => console.log("error", error));
   };
 
   onRouteChange = (route: any) => {
-    if (route === 'signout') {
+    if (route === "signout") {
       this.setState({ isSignedIn: false });
-    } else if (route === 'home') {
+    } else if (route === "home") {
       this.setState({ isSignedIn: true });
     }
     this.setState({ route });
@@ -112,16 +153,27 @@ class App extends Component<AppProps, AppState> {
     const { route, isSignedIn, imageUrl, box } = this.state;
     return (
       <div className="App flex flex-col items-center">
-        <Navigation onRouteChange={this.onRouteChange} isSignedIn={isSignedIn} />
+        <Navigation
+          onRouteChange={this.onRouteChange}
+          isSignedIn={isSignedIn}
+        />
         {route === "home" ? (
           <div className="container h-full flex items-center flex-col justify-evenly">
-            <ImageLinkForm onInputChange={this.onInputChange} onSubmit={this.onSubmit} />
+            <div>{this.state.user.name}</div>
+            <div>{this.state.user.entries}</div>
+            <ImageLinkForm
+              onInputChange={this.onInputChange}
+              onSubmit={this.onSubmit}
+            />
             <FaceRecognition imageUrl={imageUrl} box={box} />
           </div>
         ) : route === "signin" ? (
-          <SignIn onRouteChange={this.onRouteChange} />
+          <SignIn onRouteChange={this.onRouteChange} loadUser={this.loadUser} />
         ) : (
-          <Register onRouteChange={this.onRouteChange} />
+          <Register
+            onRouteChange={this.onRouteChange}
+            loadUser={this.loadUser}
+          />
         )}
       </div>
     );

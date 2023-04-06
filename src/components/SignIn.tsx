@@ -2,44 +2,55 @@ import React, { Component } from "react";
 
 interface AppProps {
   onRouteChange: (route: string) => void;
+  loadUser: (data: User) => void;
 }
 interface AppState {
   signInEmail: string;
   signInPassword: string;
+}
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  entries: number;
+  joined: string;
 }
 
 class SignIn extends Component<AppProps, AppState> {
   constructor(props: AppProps) {
     super(props);
     this.state = {
-      signInEmail: '',
-      signInPassword: ''
-    }
+      signInEmail: "",
+      signInPassword: "",
+    };
   }
 
   onEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({signInEmail: event.target.value})
-  }
+    this.setState({ signInEmail: event.target.value });
+  };
 
   onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({signInPassword: event.target.value})
-  }
+    this.setState({ signInPassword: event.target.value });
+  };
 
   onSubmitSignIn = () => {
-    console.log(this.state.signInEmail)
-    fetch('http://localhost:3000/signin', {
-      method: 'post',
-      headers: {'Content-Type': 'application/json'},
+    console.log(this.state.signInEmail);
+    fetch("http://localhost:3000/signin", {
+      method: "post",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         email: this.state.signInEmail,
-        password: this.state.signInPassword
-      })
+        password: this.state.signInPassword,
+      }),
     })
-    .then(res => res.json())
-    .then(data => {
-      data === "succ" ? this.props.onRouteChange('home') : console.log("error signing in")
-    })
-  }
+      .then((res) => res.json())
+      .then((user) => {
+        if (user.id) {
+          this.props.loadUser(user);
+          this.props.onRouteChange("home");
+        } else console.log("error signing in");
+      });
+  };
 
   render() {
     const { onRouteChange } = this.props;
@@ -50,9 +61,9 @@ class SignIn extends Component<AppProps, AppState> {
             <div className="text-center lg:text-left">
               <h1 className="text-5xl font-bold">Login now!</h1>
               <p className="py-6">
-                Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-                excepturi exercitationem quasi. In deleniti eaque aut repudiandae
-                et a id nisi.
+                Provident cupiditate voluptatem et in. Quaerat fugiat ut
+                assumenda excepturi exercitationem quasi. In deleniti eaque aut
+                repudiandae et a id nisi.
               </p>
             </div>
             <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
@@ -62,7 +73,7 @@ class SignIn extends Component<AppProps, AppState> {
                     <span className="label-text">Email</span>
                   </label>
                   <input
-                  onChange={this.onEmailChange}
+                    onChange={this.onEmailChange}
                     type="text"
                     placeholder="email"
                     className="input input-bordered"
@@ -73,7 +84,7 @@ class SignIn extends Component<AppProps, AppState> {
                     <span className="label-text">Password</span>
                   </label>
                   <input
-                  onChange={this.onPasswordChange}
+                    onChange={this.onPasswordChange}
                     type="text"
                     placeholder="password"
                     className="input input-bordered"
@@ -97,6 +108,6 @@ class SignIn extends Component<AppProps, AppState> {
       </main>
     );
   }
-};
+}
 
 export default SignIn;
