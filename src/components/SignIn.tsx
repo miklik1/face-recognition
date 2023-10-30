@@ -34,23 +34,22 @@ class SignIn extends Component<AppProps, AppState> {
   };
 
   onSubmitSignIn = () => {
-    console.log(this.state.signInEmail);
-    fetch("http://localhost:3000/signin", {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
+    fetch('https://mybackend-jyvj.onrender.com/signin', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email: this.state.signInEmail,
-        password: this.state.signInPassword,
-      }),
+        password: this.state.signInPassword
+      })
     })
-      .then((res) => res.json())
-      .then((user) => {
+      .then(response => response.json())
+      .then(user => {
         if (user.id) {
-          this.props.loadUser(user);
-          this.props.onRouteChange("home");
-        } else console.log("error signing in");
-      });
-  };
+          this.props.loadUser(user)
+          this.props.onRouteChange('home');
+        }
+      })
+  }
 
   render() {
     const { onRouteChange } = this.props;

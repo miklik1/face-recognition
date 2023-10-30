@@ -40,28 +40,25 @@ class Register extends Component<AppProps, AppState> {
     this.setState({ password: event.target.value });
   };
 
-  onSubmitRegister = () => {
-    console.log(this.state.email);
-    fetch("http://localhost:3000/register", {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
+  onSubmitSignIn = () => {
+    fetch('https://mybackend-jyvj.onrender.com/register', {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id: '125',
-        name: this.state.name,
         email: this.state.email,
         password: this.state.password,
-        entries: 0,
-        joined: new Date()
-      }),
+        name: this.state.name // Add this line
+      })
     })
-      .then((res) => res.json())
-      .then((user) => {
+      .then(response => response.json())
+      .then(user => {
         if (user) {
-          this.props.loadUser(user)
-          this.props.onRouteChange("home")
+          this.props.loadUser(user);
+          this.props.onRouteChange('home');
         }
-      });
-  };
+      })
+      .catch(error => console.error('Error:', error));
+  }
 
   render() {
     return (
@@ -112,7 +109,7 @@ class Register extends Component<AppProps, AppState> {
                 </div>
                 <div className="form-control mt-6">
                   <button
-                    onClick={this.onSubmitRegister}
+                    onClick={this.onSubmitSignIn}
                     className="btn btn-primary"
                   >
                     Register
