@@ -159,8 +159,8 @@ class App extends Component<AppProps, AppState> {
         />
         {route === "home" ? (
           <div className="container h-full flex items-center flex-col justify-evenly">
-            <div>{this.state.user.name}</div>
-            <div>{this.state.user.entries}</div>
+            <div>Username: <span className="text-xl font-bold">{this.state.user.name}</span></div>
+            <div>You have entered: <span className="text-xl font-bold">{this.state.user.entries}</span> images.</div>
             <ImageLinkForm
               onInputChange={this.onInputChange}
               onSubmit={this.onSubmit}

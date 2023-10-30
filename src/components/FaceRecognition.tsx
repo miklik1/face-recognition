@@ -12,12 +12,13 @@ const FaceRecognition: React.FC<FaceRecognitionProps> = ({
   return (
     <div style={{ width: 800 + "px", height: 400 + "px" }}>
       <div className="absolute" style={{ width: 800 + "px", height: "auto" }}>
-        <img
+        {imageUrl && <img
           id="inputimage"
           className="rounded-md drop-shadow-md"
           src={imageUrl}
           alt="sample"
         />
+        }
         <div
           className="bounding-box"
           style={{

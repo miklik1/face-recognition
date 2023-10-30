@@ -7,7 +7,8 @@ type ImageLinkFormProps = {
 
 const ImageLinkForm: React.FC<ImageLinkFormProps> = ({ onInputChange, onSubmit }) => {
   return (
-    <div className="flex">
+    <div className="flex flex-col gap-y-4 text-center">
+      <p>Insert image URL to detect face:</p>
       <div className="input-group">
         <input
           type="text"
